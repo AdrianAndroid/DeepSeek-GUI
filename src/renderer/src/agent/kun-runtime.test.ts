@@ -301,6 +301,84 @@ describe('KunRuntimeProvider', () => {
     )
   })
 
+  it('rewrites stale built-in composer models to the resolved provider model', async () => {
+    const customSettings = settings()
+    customSettings.provider.providers = [
+      {
+        ...customSettings.provider.providers[0],
+        apiType: 'responses',
+        models: ['gpt-5.5']
+      }
+    ]
+    customSettings.agents.kun.model = defaultKunRuntimeSettings().model
+    const runtimeRequest = vi.fn(async () => ({
+      ok: true,
+      status: 202,
+      body: JSON.stringify({ threadId: 'thr_1', turnId: 'turn_abc', userMessageItemId: 'item_user_real' })
+    }))
+    installDsGui({
+      getSettings: vi.fn(async () => customSettings),
+      runtimeRequest
+    })
+    const provider = new KunRuntimeProvider()
+
+    await provider.sendUserMessage('thr_1', 'hello', { model: 'deepseek-v4-pro' })
+
+    expect(runtimeRequest).toHaveBeenCalledWith(
+      '/v1/threads/thr_1/turns',
+      'POST',
+      JSON.stringify({ prompt: 'hello', model: 'gpt-5.5' })
+    )
+  })
+
+  it('routes auto composer mode to the resolved provider model for custom providers', async () => {
+    const customSettings = settings()
+    customSettings.provider.providers = [
+      {
+        ...customSettings.provider.providers[0],
+        apiType: 'responses',
+        models: ['gpt-5.5']
+      }
+    ]
+    customSettings.agents.kun.model = defaultKunRuntimeSettings().model
+    const runtimeRequest = vi.fn(async () => ({
+      ok: true,
+      status: 202,
+      body: JSON.stringify({ threadId: 'thr_1', turnId: 'turn_abc', userMessageItemId: 'item_user_real' })
+    }))
+    installDsGui({
+      getSettings: vi.fn(async () => customSettings),
+      runtimeRequest
+    })
+    const provider = new KunRuntimeProvider()
+
+    await provider.sendUserMessage('thr_1', 'hello', { model: 'auto' })
+
+    expect(runtimeRequest).toHaveBeenCalledWith(
+      '/v1/threads/thr_1/turns',
+      'POST',
+      JSON.stringify({ prompt: 'hello', model: 'gpt-5.5' })
+    )
+  })
+
+  it('preserves auto composer mode for built-in DeepSeek providers', async () => {
+    const runtimeRequest = vi.fn(async () => ({
+      ok: true,
+      status: 202,
+      body: JSON.stringify({ threadId: 'thr_1', turnId: 'turn_abc', userMessageItemId: 'item_user_real' })
+    }))
+    installDsGui({ runtimeRequest })
+    const provider = new KunRuntimeProvider()
+
+    await provider.sendUserMessage('thr_1', 'hello', { model: 'auto' })
+
+    expect(runtimeRequest).toHaveBeenCalledWith(
+      '/v1/threads/thr_1/turns',
+      'POST',
+      JSON.stringify({ prompt: 'hello', model: 'auto' })
+    )
+  })
+
   it('posts attachment ids with Kun turn requests when provided', async () => {
     const runtimeRequest = vi.fn(async () => ({
       ok: true,

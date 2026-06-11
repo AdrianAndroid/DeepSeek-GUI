@@ -138,6 +138,43 @@ export function resolveKunRuntimeSettings(settings: AppSettingsV1): ResolvedKunR
   }
 }
 
+export function resolveModelSelectionForProvider(
+  settings: AppSettingsV1,
+  requestedModel: string | undefined
+): string | undefined {
+  const selected = requestedModel?.trim() ?? ''
+  if (!selected) return undefined
+
+  const runtime = getKunRuntimeSettings(settings)
+  const provider = getModelProviderProfile(settings, runtime.providerId)
+  const providerModels = provider.models
+    .map((model) => model.trim())
+    .filter((model) => model && model !== 'auto')
+  const providerModelSet = new Set(providerModels)
+  const resolvedModel = resolveKunRuntimeSettings(settings).model.trim()
+  const isBuiltInComposerModel = DEFAULT_COMPOSER_MODEL_IDS.includes(
+    selected as typeof DEFAULT_COMPOSER_MODEL_IDS[number]
+  )
+  const isBuiltInConcreteComposerModel = selected !== 'auto' && isBuiltInComposerModel
+  const providerHasBuiltInModels = DEFAULT_COMPOSER_MODEL_IDS.some(
+    (model) => model !== 'auto' && providerModelSet.has(model)
+  )
+
+  if (
+    providerModels.length > 0 &&
+    resolvedModel &&
+    resolvedModel !== selected &&
+    (
+      (selected === 'auto' && !providerHasBuiltInModels) ||
+      (isBuiltInConcreteComposerModel && !providerModelSet.has(selected))
+    )
+  ) {
+    return resolvedModel
+  }
+
+  return selected
+}
+
 function resolveKunRuntimeModel(
   runtimeModel: string,
   providerModels: readonly string[]

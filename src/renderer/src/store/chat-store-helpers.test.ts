@@ -9,6 +9,7 @@ import {
   compactCodeWorkspaceRoots,
   hydrateBlockModelLabels,
   isClawThread,
+  mergeComposerPickList,
   newClawChannel,
   normalizeTurnModelMap,
   rememberTurnModel
@@ -141,6 +142,20 @@ describe('chat-store Claw helpers', () => {
     expect(feishu.agentProfile.name).toBe('feishu agent')
     expect(weixin.label).toBe('weixin agent')
     expect(weixin.agentProfile.name).toBe('weixin agent')
+  })
+
+  it('omits built-in DeepSeek models when provider groups supply explicit models', () => {
+    expect(
+      mergeComposerPickList(true, ['gpt-5.5'], { includeDefaults: false })
+    ).toEqual(['auto', 'gpt-5.5'])
+  })
+
+  it('keeps built-in DeepSeek models for fallback picker lists', () => {
+    expect(mergeComposerPickList(false, [])).toEqual([
+      'auto',
+      'deepseek-v4-flash',
+      'deepseek-v4-pro'
+    ])
   })
 
   it('recognizes Claw managed prompt summaries as Claw sessions', () => {

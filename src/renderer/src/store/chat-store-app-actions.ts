@@ -9,7 +9,11 @@ type CreateAppActionsOptions = {
   i18n: typeof i18next
   persistComposerModel: (model: string) => void
   readStoredComposerModel: (allowedIds: readonly string[]) => string
-  mergeComposerPickList: (upstreamOk: boolean, upstreamIds: string[]) => string[]
+  mergeComposerPickList: (
+    upstreamOk: boolean,
+    upstreamIds: string[],
+    options?: { includeDefaults?: boolean }
+  ) => string[]
   getComposerModelLoadPromise: () => Promise<void> | null
   setComposerModelLoadPromise: (promise: Promise<void> | null) => void
   applyTheme: (theme: AppSettingsV1['theme']) => void
@@ -65,8 +69,12 @@ export function createAppActions(options: CreateAppActionsOptions): Pick<
       if (typeof window.dsGui === 'undefined') return
       const task = (async () => {
         const res = await window.dsGui.fetchUpstreamModels()
-        const pick = mergeComposerPickList(res.ok, res.ok ? res.modelIds : [])
         const groups = res.ok ? res.modelGroups ?? [] : []
+        const groupedIds = groups.flatMap((group) => group.modelIds)
+        const pickIds = groupedIds.length > 0 ? groupedIds : (res.ok ? res.modelIds : [])
+        const pick = mergeComposerPickList(res.ok, pickIds, {
+          includeDefaults: groupedIds.length === 0
+        })
         const allowed = new Set(pick)
         set((state) => {
           let model = state.composerModel
