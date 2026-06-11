@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/adrianandroid-deepseek-gui-badge.png)](https://mseep.ai/app/adrianandroid-deepseek-gui)
+
 <p align="center">
   <img src="src/asset/img/deepseek.png" width="96" alt="DeepSeek GUI 图标">
 </p>
