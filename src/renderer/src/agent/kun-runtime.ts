@@ -8,7 +8,11 @@ import type {
   ThreadUsageSnapshot,
   UserInputAnswer
 } from './types'
-import { getKunRuntimeSettings, resolveKunRuntimeSettings } from '@shared/app-settings'
+import {
+  getKunRuntimeSettings,
+  resolveKunRuntimeSettings,
+  resolveModelSelectionForProvider
+} from '@shared/app-settings'
 import {
   KUN_ATTACHMENT_DIAGNOSTICS_PATH,
   KUN_ATTACHMENTS_PATH,
@@ -237,11 +241,11 @@ export class KunRuntimeProvider implements AgentProvider {
     }
   ): Promise<{ turnId: string; threadId: string; userMessageItemId?: string }> {
     const body: Record<string, unknown> = { prompt: text }
-    const explicitModel = options?.model?.trim()
+    const settings = await rendererRuntimeClient.getSettings()
+    const explicitModel = resolveModelSelectionForProvider(settings, options?.model)
     if (explicitModel) {
       body.model = explicitModel
     } else {
-      const settings = await rendererRuntimeClient.getSettings()
       const implicitModel = implicitResolvedModelOverride(settings)
       if (implicitModel) body.model = implicitModel
     }
@@ -293,11 +297,11 @@ export class KunRuntimeProvider implements AgentProvider {
     options?: { model?: string }
   ): Promise<{ turnId: string; threadId: string; userMessageItemId?: string; reviewItemId?: string }> {
     const body: Record<string, unknown> = { target }
-    const explicitModel = options?.model?.trim()
+    const settings = await rendererRuntimeClient.getSettings()
+    const explicitModel = resolveModelSelectionForProvider(settings, options?.model)
     if (explicitModel) {
       body.model = explicitModel
     } else {
-      const settings = await rendererRuntimeClient.getSettings()
       const implicitModel = implicitResolvedModelOverride(settings)
       if (implicitModel) body.model = implicitModel
     }

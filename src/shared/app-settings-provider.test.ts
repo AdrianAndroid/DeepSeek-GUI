@@ -6,6 +6,7 @@ import {
   defaultModelProviderSettings,
   defaultScheduleSettings,
   defaultWriteSettings,
+  resolveModelSelectionForProvider,
   resolveKunRuntimeSettings,
   type AppSettingsV1
 } from './app-settings'
@@ -86,5 +87,28 @@ describe('model provider settings', () => {
     const runtime = resolveKunRuntimeSettings(input)
 
     expect(runtime.model).toBe('runtime-only-model')
+  })
+
+  it('maps stale built-in composer models to the selected provider default', () => {
+    const input = settings()
+    input.agents.kun.model = defaultKunRuntimeSettings().model
+
+    expect(resolveModelSelectionForProvider(input, 'deepseek-v4-pro')).toBe('custom-model')
+    expect(resolveModelSelectionForProvider(input, 'auto')).toBe('custom-model')
+  })
+
+  it('preserves provider-supported model selections', () => {
+    const input = settings()
+
+    expect(resolveModelSelectionForProvider(input, 'custom-model')).toBe('custom-model')
+  })
+
+  it('preserves auto mode for providers with built-in DeepSeek models', () => {
+    const input = settings()
+    input.provider = defaultModelProviderSettings()
+    input.agents.kun.providerId = ''
+    input.agents.kun.model = defaultKunRuntimeSettings().model
+
+    expect(resolveModelSelectionForProvider(input, 'auto')).toBe('auto')
   })
 })

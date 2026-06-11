@@ -96,11 +96,18 @@ export function forgetCodeWorkspaceRoot(
   return next
 }
 
-export function mergeComposerPickList(upstreamOk: boolean, upstreamIds: string[]): string[] {
+export function mergeComposerPickList(
+  upstreamOk: boolean,
+  upstreamIds: string[],
+  options: { includeDefaults?: boolean } = {}
+): string[] {
+  const includeDefaults = options.includeDefaults ?? !upstreamOk
   const ordered = new Set<string>()
   ordered.add('auto')
-  for (const id of DEFAULT_COMPOSER_MODEL_IDS) {
-    if (id !== 'auto') ordered.add(id)
+  if (includeDefaults) {
+    for (const id of DEFAULT_COMPOSER_MODEL_IDS) {
+      if (id !== 'auto') ordered.add(id)
+    }
   }
   if (upstreamOk) {
     for (const id of upstreamIds) {

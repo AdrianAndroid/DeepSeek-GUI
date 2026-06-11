@@ -301,6 +301,7 @@ function shouldStartHidden(settings: AppSettingsV1): boolean {
 
 function syncLoginItemSettings(settings: AppSettingsV1): void {
   if (process.platform !== 'win32' && process.platform !== 'darwin') return
+  if (process.platform === 'darwin' && !app.isPackaged) return
   const behavior = settings.appBehavior
   try {
     app.setLoginItemSettings({
