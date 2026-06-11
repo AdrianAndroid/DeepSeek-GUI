@@ -1,0 +1,15 @@
+libpng warning: tRNS: invalid with alpha channel
+libpng warning: tRNS: invalid with alpha channel
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+(node:68736) UnhandledPromiseRejectionWarning: TypeError: Object has been destroyed
+    at _.send (node:electron/js2c/browser_init:2:76120)
+    at file:///D:/workspace/ai/DeepSeek-GUI/out/main/index.js:10225:14
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+(Use `electron --trace-warnings ...` to show where the warning was created)
+(node:68736) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). To terminate the node process on unhandled promise rejection, use the CLI flag `--unhandled-rejections=strict` (see https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode). (rejection id: 327)
+(node:68736) UnhandledPromiseRejectionWarning: TypeError: Object has been destroyed
+    at _.send (node:electron/js2c/browser_init:2:76120)
+    at file:///D:/workspace/ai/DeepSeek-GUI/out/main/index.js:10225:14
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+(node:68736) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). To terminate the node process on unhandled promise rejection, use the CLI flag `--unhandled-rejections=strict` (see https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode). (rejection id: 328)
